@@ -42,6 +42,8 @@
 #ifndef USER_MFLASH_MFLASH_DEV_CAPABILITY_H_
 #define USER_MFLASH_MFLASH_DEV_CAPABILITY_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "mflash_pack_layer.h"
 
 #ifndef UEFI_BUILD

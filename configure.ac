@@ -253,6 +253,20 @@ if test "x$enable_openssl" = "xyes"; then
   AC_CHECK_HEADER(openssl/bio.h,,AC_MSG_ERROR([cannot find openssl/bio.h . remove --enable-openssl to remove this dependaency or install openssl]))
   AC_CHECK_HEADER(openssl/md5.h,,AC_MSG_ERROR([cannot find openssl/md5.h . remove --enable-openssl to remove this dependaency or install openssl]))
   TOOLS_CRYPTO="tools_crypto mlxsign_lib"
+  # OpenSSL 4.0 removed the ENGINE API; build without engine-based signing there.
+  AC_MSG_CHECKING([for OpenSSL ENGINE support])
+  AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM([[
+#include <openssl/opensslconf.h>
+#ifdef OPENSSL_NO_ENGINE
+  ERROR: OpenSSL built without ENGINE support
+#endif
+]])], [openssl_engine=yes], [openssl_engine=no])
+  AC_MSG_RESULT($openssl_engine)
+  if test "x$openssl_engine" = "xno"; then
+    CFLAGS="$CFLAGS -DNO_DYNAMIC_ENGINE"
+    CXXFLAGS="$CXXFLAGS -DNO_DYNAMIC_ENGINE"
+  fi
 fi
 
 AC_MSG_CHECKING(--enable-all-static argument)
