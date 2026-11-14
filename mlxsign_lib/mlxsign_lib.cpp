@@ -32,6 +32,7 @@
  */
 
 #ifndef NO_OPEN_SSL
+#include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
@@ -113,14 +114,25 @@ MlxSignSHA256::MlxSignSHA256() : MlxSignSHA(SHA256_DIGEST_LENGTH) {}
 int MlxSignSHA256::getDigest(std::vector<u_int8_t>& digest)
 {
     int rc;
-    SHA256_CTX ctx;
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
     digest.resize(_digestLength);
     memset(&digest[0], 0, digest.size());
-    rc = SHA256_Init(&ctx);
-    CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_INIT_ERROR);
-    rc = SHA256_Update(&ctx, (void*)(&_buff[0]), _buff.size());
-    CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_CALCULATION_ERROR);
-    rc = SHA256_Final(&digest[0], &ctx);
+    if (ctx == NULL)
+    {
+        return MlxSign::MLX_SIGN_SHA_INIT_ERROR;
+    }
+    rc = EVP_DigestInit_ex(ctx, EVP_sha256(), NULL);
+    if (rc != 1)
+    {
+        EVP_MD_CTX_free(ctx);
+        return MlxSign::MLX_SIGN_SHA_INIT_ERROR;
+    }
+    rc = EVP_DigestUpdate(ctx, (void*)(&_buff[0]), _buff.size());
+    if (rc == 1)
+    {
+        rc = EVP_DigestFinal_ex(ctx, &digest[0], NULL);
+    }
+    EVP_MD_CTX_free(ctx);
     CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_CALCULATION_ERROR);
     return MlxSign::MLX_SIGN_SUCCESS;
 }
@@ -134,17 +146,34 @@ MlxSignSHA512::MlxSignSHA512() : MlxSignSHA(SHA512_DIGEST_LENGTH) {}
 int MlxSignSHA512::getDigest(std::vector<u_int8_t>& digest)
 {
     int rc;
-    SHA512_CTX ctx;
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
     digest.resize(_digestLength);
     memset(&digest[0], 0, digest.size());
-    rc = SHA512_Init(&ctx);
-    CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_INIT_ERROR);
-    rc = SHA512_Update(&ctx, (void*)(&_buff[0]), _buff.size());
-    CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_CALCULATION_ERROR);
-    rc = SHA512_Final(&digest[0], &ctx);
+    if (ctx == NULL)
+    {
+        return MlxSign::MLX_SIGN_SHA_INIT_ERROR;
+    }
+    rc = EVP_DigestInit_ex(ctx, EVP_sha512(), NULL);
+    if (rc != 1)
+    {
+        EVP_MD_CTX_free(ctx);
+        return MlxSign::MLX_SIGN_SHA_INIT_ERROR;
+    }
+    rc = EVP_DigestUpdate(ctx, (void*)(&_buff[0]), _buff.size());
+    if (rc == 1)
+    {
+        rc = EVP_DigestFinal_ex(ctx, &digest[0], NULL);
+    }
+    EVP_MD_CTX_free(ctx);
     CHECK_RC(rc, 1, MlxSign::MLX_SIGN_SHA_CALCULATION_ERROR);
     return MlxSign::MLX_SIGN_SUCCESS;
 }
+
+// The RSA/HMAC code below uses the low-level OpenSSL APIs that are deprecated since OpenSSL 3.0.
+// They are kept (instead of EVP_PKEY/EVP_MAC) to preserve the exact behavior and the void* key contexts
+// exposed in the header; the diagnostic is silenced for this block only.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 MlxSignRSA::MlxSignRSA() : _privCtx(NULL), _pubCtx(NULL) {}
 
@@ -414,5 +443,7 @@ MlxSignHMAC::~MlxSignHMAC()
     HMAC_CTX_free((HMAC_CTX*)ctx);
 #endif
 }
+
+#pragma GCC diagnostic pop
 
 #endif // ENABLE_OPENSSL

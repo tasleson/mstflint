@@ -31,10 +31,14 @@
  *
  */
 
-#include <openssl/md5.h>
+#include <openssl/evp.h>
 #include "tools_md5.h"
 
 u_int8_t* tools_md5(const u_int8_t* src, u_int32_t src_len, u_int8_t dst[16])
 {
-    return MD5((const unsigned char*)src, src_len, (unsigned char*)dst);
+    if (EVP_Digest(src, src_len, dst, NULL, EVP_md5(), NULL) != 1)
+    {
+        return NULL;
+    }
+    return dst;
 }
