@@ -3200,7 +3200,7 @@ static int mreg_send_raw(mfile              * mf,
 {
     /* printf("-D- reg_id = %d, reg_size = %d, r_size_reg = %d , w_size_reg = %d */
     /* \n",reg_id,reg_size,r_size_reg,w_size_reg); */
-    int                 mad_rc, cmdif_size = 0;
+    int                 mad_rc;
     struct OperationTlv tlv;
     struct reg_tlv      tlv_info;
     u_int8_t            buffer[1024] = {0};
@@ -3213,11 +3213,10 @@ static int mreg_send_raw(mfile              * mf,
 
     /* Pack the mad */
 
-    cmdif_size += OperationTlv_pack(&tlv, buffer);
-    cmdif_size += reg_tlv_pack(&tlv_info, buffer + OP_TLV_SIZE);
+    OperationTlv_pack(&tlv, buffer);
+    reg_tlv_pack(&tlv_info, buffer + OP_TLV_SIZE);
     /* put the reg itself into the buffer */
     memcpy(buffer + OP_TLV_SIZE + REG_TLV_HEADER_LEN, reg_data, reg_size);
-    cmdif_size += reg_size;
 
 #ifdef _ENABLE_DEBUG_
     fprintf(stdout, "-I-Tlv's of Data Sent:\n");

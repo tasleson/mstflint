@@ -40,11 +40,11 @@ FsSyncEOperations::FsSyncEOperations(FImage* imageAccess) : FsCompsOperations(im
 }
 
 bool FsSyncEOperations::FwQuery(fw_info_t* fwInfo,
-                                bool readRom,
-                                bool isStripedImage,
-                                bool quickQuery,
-                                bool ignoreDToc,
-                                bool verbose)
+                                bool /*readRom*/,
+                                bool /*isStripedImage*/,
+                                bool /*quickQuery*/,
+                                bool /*ignoreDToc*/,
+                                bool /*verbose*/)
 {
     u_int8_t data[sizeof(_header)] = {0};
 

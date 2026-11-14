@@ -204,6 +204,7 @@ protected:
                                          vector<u_int8_t> non_critical_sections_signature = vector<u_int8_t>());
     virtual bool IsSectionExists(fs3_section_t sectType);
     virtual bool VerifyImageAfterModifications();
+    using Fs3Operations::ParseDevData;
     bool ParseDevData(bool quickQuery = true,
                       bool verbose = false,
                       VerifyCallBack verifyCallBackFunc = (VerifyCallBack)NULL,

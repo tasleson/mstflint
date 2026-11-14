@@ -316,12 +316,12 @@ bool FsCtrlOperations::FsIntQuery()
             CRSpaceRegisters cr_space_reg(mf, _fwImgInfo.ext_info.chip_type);
             _fsCtrlImgInfo.global_image_status = cr_space_reg.getGlobalImageStatus();
         }
-        catch (logic_error e)
+        catch (const logic_error& e)
         {
             printf("%s\n", e.what());
             return false;
         }
-        catch (exception e)
+        catch (const exception& e)
         {
             printf("%s\n", e.what());
             return false;
@@ -346,12 +346,14 @@ bool FsCtrlOperations::FsIntQuery()
 
     strncpy(_fsCtrlImgInfo.name, fwQuery.name, NAME_LEN);
     strncpy(_fsCtrlImgInfo.description, fwQuery.description, DESCRIPTION_LEN);
-    (strncpy(_fsCtrlImgInfo.deviceVsd, fwQuery.deviceVsd, VSD_LEN));
+    strncpy(_fsCtrlImgInfo.deviceVsd, fwQuery.deviceVsd, VSD_LEN);
+    _fsCtrlImgInfo.deviceVsd[VSD_LEN] = '\0';
     if (FwType() == FIT_FS3)
     {
         memcpy(_fwImgInfo.ext_info.vsd, fwQuery.deviceVsd, VSD_LEN);
     }
-    (strncpy(_fsCtrlImgInfo.image_vsd, fwQuery.imageVsd, VSD_LEN));
+    strncpy(_fsCtrlImgInfo.image_vsd, fwQuery.imageVsd, VSD_LEN);
+    _fsCtrlImgInfo.image_vsd[VSD_LEN] = '\0';
     return true;
 }
 
@@ -641,7 +643,7 @@ bool FsCtrlOperations::_createImageOps(FwOperations** imageOps)
     return true;
 }
 
-bool FsCtrlOperations::GetHashesTableSize(u_int32_t hashes_table_addr, u_int32_t& size)
+bool FsCtrlOperations::GetHashesTableSize(u_int32_t /*hashes_table_addr*/, u_int32_t& size)
 {
     u_int32_t htoc_size =
       IMAGE_LAYOUT_HTOC_HEADER_SIZE + MAX_HTOC_ENTRIES_NUM * (IMAGE_LAYOUT_HTOC_ENTRY_SIZE + HTOC_HASH_SIZE);

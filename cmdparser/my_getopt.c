@@ -791,7 +791,7 @@ int _getopt_internal(int argc,
 
     {
         char c = *nextchar++;
-        char* temp = my_index(optstring, c);
+        const char* temp = my_index(optstring, c);
 
         /* Increment `tools_optind' when we start to process its last character.  */
         if (*nextchar == '\0')

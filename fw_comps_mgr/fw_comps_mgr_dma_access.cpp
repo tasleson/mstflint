@@ -255,7 +255,6 @@ bool DMAComponentAccess::accessComponent(u_int32_t updateHandle,
         }
         prepareParameters(updateHandle, &accessData, offset + (data_size - leftSize), data, data_size, access, leftSize,
                           page, mailboxPage);
-        int nIteration = 0;
         while (leftSize > 0)
         {
             DPRINTF(("0x%x bytes left to %s\n", leftSize, access == MCC_READ_COMP ? "read" : "burn"));
@@ -360,7 +359,6 @@ bool DMAComponentAccess::accessComponent(u_int32_t updateHandle,
                     // prepare auxilary data for next iteration
                 }
             }
-            nIteration++;
             int newPercentage = (((data_size - leftSize) * 100) / data_size);
 #ifdef UEFI_BUILD
             if (newPercentage > progressPercentage && progressFuncAdv && progressFuncAdv->uefi_func)

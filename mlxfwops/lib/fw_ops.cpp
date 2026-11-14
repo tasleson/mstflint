@@ -1191,7 +1191,9 @@ bool FwOperations::writeImageEx(ProgressCallBackEx progressFuncEx,
     u_int32_t last_percent = 0xff;
     totalSz = totalSz == -1 ? cnt : totalSz;
     int origFlashWorkingMode = Flash::Fwm_Default;
+#ifdef __WIN__
     u_int32_t CurrentIteration = 0;
+#endif
     bool rc;
     while (towrite)
     {
@@ -1253,8 +1255,8 @@ bool FwOperations::writeImageEx(ProgressCallBackEx progressFuncEx,
         p += trans;
         curr_addr += trans;
         towrite -= trans;
-        CurrentIteration++;
 #ifdef __WIN__
+        CurrentIteration++;
         if (cpuUtilization)
         {
             if ((CurrentIteration % cpuPercent) == 0)
@@ -2810,17 +2812,17 @@ bool FwOperations::GetImageSize(u_int32_t*)
 {
     return errmsg("GetImageSize is not supported");
 }
-bool FwOperations::GetHashesTableData(vector<u_int8_t>& data)
+bool FwOperations::GetHashesTableData(vector<u_int8_t>& /*data*/)
 {
     return errmsg("GetHashesTableData is not supported");
 }
 
-bool FwOperations::QueryComponentData(FwComponent::comps_ids_t comp, u_int32_t deviceIndex, vector<u_int8_t>& data)
+bool FwOperations::QueryComponentData(FwComponent::comps_ids_t /*comp*/, u_int32_t /*deviceIndex*/, vector<u_int8_t>& /*data*/)
 {
     return errmsg("GetComponentData is not supported");
 }
 
-bool FwOperations::IsCompatibleToDevice(vector<u_int8_t>& data, u_int8_t forceVersion)
+bool FwOperations::IsCompatibleToDevice(vector<u_int8_t>& /*data*/, u_int8_t /*forceVersion*/)
 {
     return errmsg("IsCompatibleToDevice is not supported");
 }

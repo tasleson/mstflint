@@ -1176,7 +1176,7 @@ bool Fs4Operations::encryptedFwReadImageInfoSection()
     return true;
 }
 
-bool Fs4Operations::ParseDevData(bool quickQuery, bool verbose, VerifyCallBack verifyCallBackFunc, bool showItoc)
+bool Fs4Operations::ParseDevData(bool quickQuery, bool verbose, VerifyCallBack verifyCallBackFunc, bool /*showItoc*/)
 {
     //* Initializing DTOC info
     _ioAccess->set_address_convertor(0, 0);
@@ -1224,7 +1224,7 @@ bool Fs4Operations::encryptedFwQuery(fw_info_t* fwInfo, bool quickQuery, bool ig
 
     if (!ignoreDToc)
     {
-        if (!ParseDevData(quickQuery, verbose))
+        if (!ParseDevData(quickQuery, verbose, (VerifyCallBack)NULL, false))
         {
             return false;
         }
@@ -2415,7 +2415,7 @@ bool Fs4Operations::burnEncryptedImage(FwOperations* imageOps, ExtBurnParams& bu
         }
 
         //* Parse DTOC and its sections
-        if (!((Fs4Operations*)imageOps)->ParseDevData(false))
+        if (!((Fs4Operations*)imageOps)->ParseDevData(false, false, (VerifyCallBack)NULL, false))
         {
             return errmsg("%s", imageOps->err());
         }
